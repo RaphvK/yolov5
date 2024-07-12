@@ -9,3 +9,5 @@ jobs:
         with:
           base-image: rwthika/ros2:humble
           command: ros2 launch yolov5_tc launch.py
+          target: dev,run
+          build-context: ${{ github.workspace }}/.tc
