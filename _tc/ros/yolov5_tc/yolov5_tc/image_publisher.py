@@ -11,7 +11,7 @@ class ImagePublisher(Node):
         timer_period = 1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.bridge = CvBridge()
-        self.cv_image = cv2.imread('./src/target/data/images/bus.jpg')
+        self.cv_image = cv2.imread('./install/yolov5_tc/share/yolov5_tc/test/unicaragil-vehicles.jpg')
 
     def timer_callback(self):
         msg = self.bridge.cv2_to_imgmsg(self.cv_image, encoding="bgr8")
