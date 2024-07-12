@@ -5,7 +5,7 @@ jobs:
   docker-ros:
     runs-on: ubuntu-latest
     steps:
-      - uses: ika-rwth-aachen/docker-ros@v1.3.1
+      - uses: ika-rwth-aachen/docker-ros@v1.5.0
         with:
           base-image: rwthika/ros2:humble
           command: ros2 launch yolov5_tc launch.py
