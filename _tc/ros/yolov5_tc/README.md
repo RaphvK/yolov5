@@ -2,12 +2,14 @@
 
 TC wrapper for the camera object detection repository [YOLOv5](https://github.com/ultralytics/yolov5).
 
+> You need support or want to use this code for commercial purposes? Contact us at [info@thinking-cars.de](mailto:info@thinking-cars.de)!
+
 ## Quick Start
 
 1. Start the inference node and the Web API
 
 ```bash
-ros2 launch yolov5_tc launch.py
+docker run --rm -it --name yolov5_tc ghcr.io/raphvk/yolov5:latest_tc_ci
 ```
 
 2. Send an image to the Web API
