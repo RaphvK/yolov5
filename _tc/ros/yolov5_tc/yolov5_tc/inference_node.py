@@ -7,10 +7,6 @@ import cv2
 from cv_bridge import CvBridge
 import torch
 
-# constants
-INPUT_TOPIC = "~/input"
-OUTPUT_TOPIC = "~/output"
-
 class InferenceNode(Node):
 
     def __init__(self):
@@ -25,20 +21,25 @@ class InferenceNode(Node):
 
         # create a subscriber for handling incoming messages
         self.subscriber = self.create_subscription(Image,
-                                                   INPUT_TOPIC,
+                                                   "~/input_image",
                                                    self.topicCallback,
                                                    qos_profile=1)
         self.get_logger().info(f"Subscribed to '{self.subscriber.topic_name}'")
 
         # create a publisher for publishing messages
-        self.publisher = self.create_publisher(ObjectList,
-                                               OUTPUT_TOPIC,
+        self.publisher_objects = self.create_publisher(ObjectList,
+                                               "~/output_objects",
                                                qos_profile=1)
-        self.get_logger().info(f"Publishing to '{self.publisher.topic_name}'")
+        self.get_logger().info(f"Publishing objects to '{self.publisher_objects.topic_name}'")
 
-        self.cv_bridge = CvBridge()
+        self.publisher_image = self.create_publisher(Image,
+                                                    "~/output_image",
+                                                    qos_profile=1)
+        self.get_logger().info(f"Publishing images to '{self.publisher_image.topic_name}'")
+
+
         self.model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-
+        self.cv_bridge = CvBridge()
         self.class_mapping = {
             0: 1, # person
             1: 2, # bicycle
@@ -158,7 +159,6 @@ class InferenceNode(Node):
         cv_image = self.cv_bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
         result = self.model(cv_image)
-        print(result)
         result_pandas = result.pandas().xyxy[0]
 
         # create and publish a new message
@@ -171,8 +171,6 @@ class InferenceNode(Node):
             common_class_id = self.class_mapping[class_id]
 
             if common_class_id != 0:
-
-                print(xmin, xmax, ymin, ymax, confidence, class_id)
 
                 object_classification = ObjectClassification()
                 object_classification.type = common_class_id
@@ -189,8 +187,8 @@ class InferenceNode(Node):
                 cv2.putText(cv_image, f"{int(confidence*100)}% {self.class_labels[common_class_id]}", (int(xmin), int(ymin-5)), cv2.FONT_HERSHEY_SIMPLEX, 1e-3*cv_image.shape[0], self.class_colors[common_class_id], 2)
 
         self.get_logger().info(f"Publishing Object List with {len(object_list.objects)} objects")
-        self.publisher.publish(object_list)
-        cv2.imwrite("/docker-ros/ws/result.jpg", cv_image)
+        self.publisher_objects.publish(object_list)
+        self.publisher_image.publish(self.cv_bridge.cv2_to_imgmsg(cv_image, encoding="bgr8"))
 
 def main():
 

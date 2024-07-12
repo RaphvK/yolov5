@@ -7,7 +7,7 @@ from cv_bridge import CvBridge
 class ImagePublisher(Node):
     def __init__(self):
         super().__init__('image_publisher')
-        self.publisher_ = self.create_publisher(Image, '/inference_node/input', 10)
+        self.publisher_ = self.create_publisher(Image, '/inference_node/input_image', 10)
         timer_period = 1  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.bridge = CvBridge()
