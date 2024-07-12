@@ -1,0 +1,8 @@
+# List of other repositories that are required to build the package(s) in this repository
+# https://github.com/dirk-thomas/vcstool
+#
+repositories:
+  perception_interfaces:
+    type: git
+    url: https://gitlab+deploy-token-111:gldt-KXQpMy4TuTPPC3ifx8vn@gitlab.ika.rwth-aachen.de/fb-fi/definitions/perception_interfaces
+    version: main
