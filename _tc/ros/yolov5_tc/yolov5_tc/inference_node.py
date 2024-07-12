@@ -3,6 +3,7 @@ import itertools
 from sensor_msgs.msg import Image
 from perception_msgs.msg import ObjectList, Object, ObjectClassification
 from rclpy.node import Node
+import cv2
 from cv_bridge import CvBridge
 import torch
 
@@ -120,6 +121,34 @@ class InferenceNode(Node):
             78: 0, # hair drier
             79: 0, # toothbrush
         }
+        self.class_labels = {
+            0: 'Unclassified',
+            1: 'Pedestrian',
+            2: 'Bicycle',
+            3: 'Motorbike',
+            4: 'Car',
+            5: 'Truck',
+            6: 'Van',
+            7: 'Bus',
+            8: 'Animal',
+            9: 'Road Obstacle',
+            10: 'Train',
+            11: 'Trailer'
+        }
+        self.class_colors = {
+            0: (189, 189, 189),
+            1: (255, 255, 0),
+            2: (0, 0, 255),
+            3: (0, 255, 255),
+            4: (0, 255, 0),
+            5: (0, 100, 0),
+            6: (0, 255, 128),
+            7: (0, 100, 100),
+            8: (255, 50, 150),
+            9: (100, 0, 50),
+            10: (255, 128, 0),
+            11: (100, 100, 0)
+        }
 
     def topicCallback(self, msg: Image):
 
@@ -129,6 +158,7 @@ class InferenceNode(Node):
         cv_image = self.cv_bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
         result = self.model(cv_image)
+        print(result)
         result_pandas = result.pandas().xyxy[0]
 
         # create and publish a new message
@@ -146,7 +176,6 @@ class InferenceNode(Node):
 
                 object_classification = ObjectClassification()
                 object_classification.type = common_class_id
-
                 object = Object()
                 object.existence_probability = confidence
                 object.state.header.stamp = msg.header.stamp
@@ -154,11 +183,14 @@ class InferenceNode(Node):
                 object.state.model_id = 16
                 object.state.continuous_state = [xmin, ymin, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, xmax-xmin, ymax-ymin]
                 object.state.classifications = [object_classification]
+                object_list.objects.append(object)
 
-                object_list.objects.append(object)            
+                cv2.rectangle(cv_image, (int(xmin), int(ymin)), (int(xmax), int(ymax)), self.class_colors[common_class_id], 2)
+                cv2.putText(cv_image, f"{int(confidence*100)}% {self.class_labels[common_class_id]}", (int(xmin), int(ymin-5)), cv2.FONT_HERSHEY_SIMPLEX, 1e-3*cv_image.shape[0], self.class_colors[common_class_id], 2)
 
         self.get_logger().info(f"Publishing Object List with {len(object_list.objects)} objects")
         self.publisher.publish(object_list)
+        cv2.imwrite("/docker-ros/ws/result.jpg", cv_image)
 
 def main():
 
