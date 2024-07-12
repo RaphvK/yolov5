@@ -2,23 +2,22 @@
 
 TC wrapper for the camera object detection repository [YOLOv5](https://github.com/ultralytics/yolov5).
 
-- [YOLOv5 - TC](#)
-  - [Python Node](#python-node)
-    - [\<PACKAGE\>/\<NODE\>](#packagenode)
-      - [Subscribed Topics](#subscribed-topics)
-      - [Published Topics](#published-topics)
-      - [Services](#services)
-      - [Actions](#actions)
-      - [Parameters](#parameters)
-  - [Usage of docker-ros Images](#usage-of-docker-ros-images)
-    - [Available Images](#available-images)
-    - [Default Command](#default-command)
-    - [Environment Variables](#environment-variables)
-    - [Launch Files](#launch-files)
-    - [Configuration Files](#configuration-files)
-    - [Additional Remarks](#additional-remarks)
-  - [Official Documentation](#official-documentation)
+## Quick Start
 
+1. Start the inference node and the Web API
+
+```bash
+ros2 launch yolov5_tc launch.py
+```
+
+2. Send an image to the Web API
+
+```bash
+# yolov5_tc/
+curl -X POST -F "image=@./test/unicaragil-vehicles.jpg" --output ./test/result.jpg http://localhost:5000/yolov5/input_image
+```
+
+3. Inspect the resulting image with bounding boxes at [./test/result.jpg](./test/result.jpg).
 
 ## Python Nodes
 
@@ -26,6 +25,7 @@ TC wrapper for the camera object detection repository [YOLOv5](https://github.co
 | --- | --- | --- |
 | `yolov5_tc` | `inference_node` | Receives images and publishes object lists |
 | `yolov5_tc` | `image_publisher` | Publishes a test image for testig purposes |
+| `yolov5_tc` | `web_api` | Starts a Webserver that receives images through a REST API, sends them to the `inference_node` and returns the image with bounding boxes as jpg file |
 
 ### yolov5_tc/inference_node
 
@@ -33,13 +33,28 @@ TC wrapper for the camera object detection repository [YOLOv5](https://github.co
 
 | Topic | Type | Description |
 | --- | --- | --- |
-| `~/input` | `sensor_msgs/msg/Image` | Input image |
+| `~/input_image` | `sensor_msgs/msg/Image` | Input image to be used for object detection |
 
 #### Published Topics
 
 | Topic | Type | Description |
 | --- | --- | --- |
-| `~/output` | `perception_msgs/msg/ObjectList` | List of detected objects |
+| `~/output_objects` | `perception_msgs/msg/ObjectList` | List of detected objects |
+| `~/output_image` | `sensor_msgs/msg/Image` | Input image with bounding boxes of detected objects overlayed |
+
+### yolov5_tc/web_api
+
+#### Subscribed Topics
+
+| Topic | Type | Description |
+| --- | --- | --- |
+| `/inference_node/output_image` | `sensor_msgs/msg/Image` | Image with bounding boxes to be returned through the REST API |
+
+#### Published Topics
+
+| Topic | Type | Description |
+| --- | --- | --- |
+| `/inference_node/input_image` | `sensor_msgs/msg/Image` | Image to be used for object detection that was received through the REST API |
 
 ### yolov5_tc/image_publisher
 
@@ -47,7 +62,7 @@ TC wrapper for the camera object detection repository [YOLOv5](https://github.co
 
 | Topic | Type | Description |
 | --- | --- | --- |
-| `/inference_node/input` | `sensor_msgs/msg/Image` | Test image |
+| `/inference_node/input_image` | `sensor_msgs/msg/Image` | Test image to be used for object detection |
 
 ## Usage of [docker-ros](https://github.com/ika-rwth-aachen/docker-ros) Images
 

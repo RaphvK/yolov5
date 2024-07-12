@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts':
         ['inference_node = yolov5_tc.inference_node:main',
-         'image_publisher = yolov5_tc.image_publisher:main'],
+         'image_publisher = yolov5_tc.image_publisher:main',
+         'web_api = yolov5_tc.web_api:main'],
     },
 )

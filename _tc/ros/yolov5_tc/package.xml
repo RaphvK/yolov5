@@ -10,6 +10,7 @@
 
   <depend>cv_bridge</depend>
   <depend>perception_msgs</depend>
+  <depend>python3-flask</depend>
   <depend>python-transforms3d-pip</depend>
   <depend>python3-ultralytics-pip</depend>
   <depend>rclpy</depend>

@@ -8,24 +8,35 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     test_arg = DeclareLaunchArgument('test', default_value='False')
+    web_api_arg = DeclareLaunchArgument('web_api', default_value='True')
 
-    always_run_node = Node(package="yolov5_tc",
-                           executable="inference_node",
-                           name="inference_node",
-                           output="screen",
-                           emulate_tty=True,
-                           parameters=[])
+    inference_node = Node(package="yolov5_tc",
+                          executable="inference_node",
+                          name="inference_node",
+                          output="screen",
+                          emulate_tty=True,
+                          parameters=[])
 
-    conditional_node = Node(package="yolov5_tc",
-                            executable="image_publisher",
-                            name="image_publisher",
-                            output="screen",
-                            emulate_tty=True,
-                            parameters=[],
-                            condition=IfCondition(LaunchConfiguration('test')))
+    web_api_node = Node(package="yolov5_tc",
+                        executable="web_api",
+                        name="web_api",
+                        output="screen",
+                        emulate_tty=True,
+                        parameters=[],
+                        condition=IfCondition(LaunchConfiguration('web_api')))
+
+    test_node = Node(package="yolov5_tc",
+                     executable="image_publisher",
+                     name="image_publisher",
+                     output="screen",
+                     emulate_tty=True,
+                     parameters=[],
+                     condition=IfCondition(LaunchConfiguration('test')))
 
     return LaunchDescription([
         test_arg,
-        always_run_node,
-        conditional_node
+        web_api_arg,
+        inference_node,
+        web_api_node,
+        test_node
     ])
