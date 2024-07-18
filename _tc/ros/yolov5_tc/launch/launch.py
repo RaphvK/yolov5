@@ -7,7 +7,6 @@ from launch.conditions import IfCondition
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    test_arg = DeclareLaunchArgument('test', default_value='False')
     web_api_arg = DeclareLaunchArgument('web_api', default_value='True')
 
     inference_node = Node(package="yolov5_tc",
@@ -25,18 +24,8 @@ def generate_launch_description():
                         parameters=[],
                         condition=IfCondition(LaunchConfiguration('web_api')))
 
-    test_node = Node(package="yolov5_tc",
-                     executable="image_publisher",
-                     name="image_publisher",
-                     output="screen",
-                     emulate_tty=True,
-                     parameters=[],
-                     condition=IfCondition(LaunchConfiguration('test')))
-
     return LaunchDescription([
-        test_arg,
         web_api_arg,
         inference_node,
-        web_api_node,
-        test_node
+        web_api_node
     ])

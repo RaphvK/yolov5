@@ -25,8 +25,7 @@ curl -X POST -F "image=@./test/unicaragil-vehicles.jpg" --output ./test/result.j
 
 | Package | Node | Description |
 | --- | --- | --- |
-| `yolov5_tc` | `inference_node` | Receives images and publishes object lists |
-| `yolov5_tc` | `image_publisher` | Publishes a test image for testig purposes |
+| `yolov5_tc` | `inference_node` | Receives images, performs object detection and publishes them as object lists and images with bounding boxes |
 | `yolov5_tc` | `web_api` | Starts a Webserver that receives images through a REST API, sends them to the `inference_node` and returns the image with bounding boxes as jpg file |
 
 ### yolov5_tc/inference_node
@@ -58,14 +57,6 @@ curl -X POST -F "image=@./test/unicaragil-vehicles.jpg" --output ./test/result.j
 | --- | --- | --- |
 | `/inference_node/input_image` | `sensor_msgs/msg/Image` | Image to be used for object detection that was received through the REST API |
 
-### yolov5_tc/image_publisher
-
-#### Published Topics
-
-| Topic | Type | Description |
-| --- | --- | --- |
-| `/inference_node/input_image` | `sensor_msgs/msg/Image` | Test image to be used for object detection |
-
 ## Usage of [docker-ros](https://github.com/ika-rwth-aachen/docker-ros) Images
 
 ### Available Images
@@ -84,8 +75,7 @@ ros2 launch yolov5_tc launch.py
 
 | Package | File | Path | Description |
 | --- | --- | --- | --- |
-| `yolov5_tc` | `launch.py` | `/docker-ros/ws/install/yolov5_tc/share/yolov5_tc/launch.py` | Starts inference node and test node if `test:=true` is appended |
-
+| `yolov5_tc` | `launch.py` | `/docker-ros/ws/install/yolov5_tc/share/yolov5_tc/launch.py` | Starts inference node and web api |
 
 ## Official Documentation
 
