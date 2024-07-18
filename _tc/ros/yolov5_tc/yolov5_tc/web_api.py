@@ -32,7 +32,8 @@ def landing_page():
     return '''
     <html>
     <body>
-        <h1>Upload an Image</h1>
+        <h1>YoloV5 - TC</h1>
+        <h2>Upload a test image</h2>
         <form method="POST" action="/yolov5/input_image" enctype="multipart/form-data">
             <input type="file" name="image">
             <input type="submit" value="Upload">
