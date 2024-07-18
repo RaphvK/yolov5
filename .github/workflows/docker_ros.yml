@@ -7,8 +7,7 @@ jobs:
     steps:
       - uses: ika-rwth-aachen/docker-ros@v1.5.0
         with:
-          base-image: ubuntu:22.04
-          ros-distro: humble
+          base-image: rwthika/ros2:humble
           command: ros2 launch yolov5_tc launch.py
           target: run
           image-name: docker.io/raffivk/yolov5_tc
