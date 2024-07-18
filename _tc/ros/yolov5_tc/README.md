@@ -9,17 +9,17 @@ TC wrapper for the camera object detection repository [YOLOv5](https://github.co
 1. Start the inference node and the Web API
 
 ```bash
-docker run --rm -it --name yolov5_tc ghcr.io/raphvk/yolov5:latest_tc_ci
+docker run --rm -it --name yolov5_tc --port 5000:5000 raffivk/yolov5_tc:latest
 ```
 
-2. Send an image to the Web API
+2. Navigate your web browser to [http://127.0.0.1:5000](http://127.0.0.1:5000) and upload a test image or directly send an image via REST API:
 
 ```bash
 # yolov5_tc/
 curl -X POST -F "image=@./test/unicaragil-vehicles.jpg" --output ./test/result.jpg http://localhost:5000/yolov5/input_image
 ```
 
-3. Inspect the resulting image with bounding boxes at [./test/result.jpg](./test/result.jpg).
+3. Inspect the resulting image in the browser or at [./test/result.jpg](./test/result.jpg).
 
 ## Python Nodes
 

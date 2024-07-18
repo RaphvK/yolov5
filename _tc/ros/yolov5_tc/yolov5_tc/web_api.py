@@ -27,6 +27,19 @@ class WebApi(Node):
         self.get_logger().info('Received output image')
         self.output_image = bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
 
+@app.route('/', methods=['GET'])
+def landing_page():
+    return '''
+    <html>
+    <body>
+        <h1>Upload an Image</h1>
+        <form method="POST" action="/yolov5/input_image" enctype="multipart/form-data">
+            <input type="file" name="image">
+            <input type="submit" value="Upload">
+        </form>
+    </body>
+    </html>
+    '''
 
 @app.route('/yolov5/input_image', methods=['POST'])
 def receive_image():
@@ -49,11 +62,9 @@ def receive_image():
     # Convert output image to JPEG format
     _, output_image_jpg = cv2.imencode('.jpg', output_image)
 
-    # Convert JPEG image to bytes
-    output_image_bytes = output_image_jpg.tobytes()
+    # show output image in HTML page
+    return Response(output_image_jpg.tobytes(), mimetype='image/jpeg')
 
-    # Return output image as JPEG file
-    return Response(output_image_bytes, mimetype='image/jpeg')
 
 def main(args=None):
     rclpy.init(args=args)
