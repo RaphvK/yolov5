@@ -9,4 +9,8 @@ jobs:
         with:
           base-image: rwthika/ros2:humble
           command: ros2 launch yolov5_tc launch.py
-          target: dev,run
+          target: run
+          image-name: raffivk/yolov5_tc
+          registry: docker.io
+          registry-user: ${{ secrets.REGISTRY_USER }}
+          registry-password: ${{ secrets.REGISTRY_PASSWORD }}
